@@ -1,5 +1,6 @@
 const showQuoteButton= document.getElementById('newQuote')
 let myQuote=[]
+const API_URL = "https://jsonplaceholder.typicode.com/posts"; // Example API URL
 
 
 function loadQuotes(){
@@ -22,6 +23,40 @@ function loadQuotes(){
 function saveQuotes(){
     localStorage.setItem('quotes', JSON.stringify(myQuote))
     
+}
+
+async function fetchQuotesFromServer() {
+    try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error("Network response was not ok");
+        const data = await response.json();
+        return data.map(item => ({
+            text: item.title, // Mapping title to text for simplicity
+            category: 'fetched' // Default category for fetched quotes
+        }));
+    } catch (error) {
+        console.error("Failed to fetch quotes:", error);
+    }
+}
+
+async function postQuote(quote) {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ title: quote.text, body: quote.category }),
+        });
+        if (!response.ok) throw new Error("Network response was not ok");
+        const newQuote = await response.json();
+        return {
+            text: newQuote.title,
+            category: 'fetched' // Default category for posted quotes
+        };
+    } catch (error) {
+        console.error("Failed to post quote:", error);
+    }
 }
 
 function showRandomQuote(){
@@ -184,7 +219,48 @@ function filterQuotes() {
     localStorage.setItem('lastSelectedCategory', selectedCategory);
 }
 
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.style.position = 'fixed';
+    notification.style.bottom = '10px';
+    notification.style.right = '10px';
+    notification.style.backgroundColor = '#f44336'; // Red color
+    notification.style.color = 'white';
+    notification.style.padding = '10px';
+    notification.style.zIndex = '1000';
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        document.body.removeChild(notification);
+    }, 3000); // Remove after 3 seconds
+}
 
+function resolveConflicts(fetchedQuotes) {
+    fetchedQuotes.forEach(fetchedQuote => {
+        const existingQuote = myQuote.find(q => q.text === fetchedQuote.text);
+        if (existingQuote) {
+            showNotification(`Conflict detected for quote: "${fetchedQuote.text}". Server data will take precedence.`);
+            Object.assign(existingQuote, fetchedQuote);
+        } else {
+            myQuote.push(fetchedQuote);
+        }
+    });
+}
+
+async function syncQuotes() {
+    const fetchedQuotes = await fetchQuotesFromServer();
+    if (fetchedQuotes) {
+        resolveConflicts(fetchedQuotes);
+        saveQuotes();
+        populateCategories();
+        filterQuotes();
+    }
+}
+
+// Set up periodic sync every 30 seconds
+setInterval(syncQuotes, 30000);
 
 // Call the function to create and add the form when the script loads
 createAddQuoteForm();
