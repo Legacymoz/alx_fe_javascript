@@ -83,15 +83,7 @@ function createAddQuoteForm() {
 }
 
 //Function to create an export Button
-function createExportBtn() {
-    let div = document.createElement('div');
-    let exportBtn = document.createElement('button');
-    exportBtn.id = "exportQuotes";
-    exportBtn.innerText = "Export Quotes";
-    exportBtn.addEventListener('click', exportQuotes); // Ensure the button triggers the export function
-    div.appendChild(exportBtn);
-    document.body.appendChild(div);
-}
+
 
 
 
@@ -134,6 +126,8 @@ function importFromJsonFile(event) {
 
 // Call the function to create and add the form when the script loads
 createAddQuoteForm();
-createExportBtn();
+
 loadQuotes();
 showQuoteButton.addEventListener('click',showRandomQuote)
+// Attach the export functionality to the HTML export button
+document.getElementById('exportQuotes').addEventListener('click', exportQuotes);
