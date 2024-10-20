@@ -16,7 +16,7 @@ function loadQuotes(){
         ]
         saveQuotes();
     }
-    populateCategoryFilter();
+    populateCategories();
 }
 
 function saveQuotes(){
@@ -63,7 +63,7 @@ function addQuote()
         document.getElementById('newQuoteText').value = "";
         document.getElementById('newQuoteCategory').value = "";
         alert("Quote added!");
-        populateCategoryFilter();
+        populateCategories();
     } else {
         alert("Please enter both quote and category.");
     }
@@ -134,12 +134,12 @@ function importFromJsonFile(event) {
         myQuote.push(...importedQuotes);
         saveQuotes();
         alert('Quotes imported successfully!');
-        populateCategoryFilter();
+        populateCategories();
     };
     fileReader.readAsText(event.target.files[0]);
 }
 
-function populateCategoryFilter() {
+function populateCategories() {
     const categoryFilter = document.getElementById('categoryFilter');
     const categories = [...new Set(myQuote.map(quote => quote.category))]; // Get unique categories
 
