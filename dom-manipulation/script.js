@@ -236,6 +236,9 @@ function showNotification(message) {
         document.body.removeChild(notification);
     }, 3000); // Remove after 3 seconds
 }
+function notifySyncSuccess() {
+    showNotification("Quotes synced with server!");
+}
 
 function resolveConflicts(fetchedQuotes) {
     fetchedQuotes.forEach(fetchedQuote => {
@@ -256,6 +259,7 @@ async function syncQuotes() {
         saveQuotes();
         populateCategories();
         filterQuotes();
+        notifySyncSuccess(); // Notify user of successful sync
     }
 }
 
