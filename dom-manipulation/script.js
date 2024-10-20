@@ -160,20 +160,28 @@ function populateCategories() {
 }
 
 function filterQuotes() {
-    const category = document.getElementById('categoryFilter').value;
+    selectedCategory = document.getElementById('categoryFilter').value; // Get selected category
+
     const displayQuote = document.getElementById('quoteDisplay');
 
-    if (category === 'all') {
-        // Show all quotes if "All Categories" is selected
-        let allQuotes = myQuote.map(q => `"${q.text}" - ${q.category}`).join('<br>');
-        displayQuote.innerHTML = allQuotes;
+    // Filter quotes based on the selected category
+    let filteredQuotes;
+    if (selectedCategory === 'all') {
+        // If "All Categories" is selected, display all quotes
+        filteredQuotes = myQuote;
     } else {
         // Filter quotes by the selected category
-        let filteredQuotes = myQuote.filter(q => q.category === category);
-        let quotesText = filteredQuotes.map(q => `"${q.text}" - ${q.category}`).join('<br>');
-        displayQuote.innerHTML = quotesText;
+        filteredQuotes = myQuote.filter(q => q.category === selectedCategory);
     }
-    localStorage.setItem('lastSelectedCategory', category);
+
+    // Generate the display text for the filtered quotes
+    const quotesText = filteredQuotes.map(q => `"${q.text}" - ${q.category}`).join('<br>');
+    
+    // Update the displayed quotes
+    displayQuote.innerHTML = quotesText;
+
+    // Save the last selected category to localStorage
+    localStorage.setItem('lastSelectedCategory', selectedCategory);
 }
 
 
@@ -185,3 +193,4 @@ loadQuotes();
 showQuoteButton.addEventListener('click',showRandomQuote)
 // Attach the export functionality to the HTML export button
 document.getElementById('exportQuotes').addEventListener('click', exportQuotes);
+document.getElementById('categoryFilter').addEventListener('change', filterQuotes);
